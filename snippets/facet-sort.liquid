@@ -1,0 +1,53 @@
+{% doc %}
+  Renders a sort-by <select>, shared by the collection and search result
+  pages. Must be rendered inside a <form method="get"> -- this snippet
+  supplies the auto-submit-on-change listener.
+
+  @param {object[]} sort_options - collection.sort_options or search.sort_options
+  @param {string} current_sort - collection.sort_by/default_sort_by or search.sort_by/default_sort_by
+  @param {string} unique_id - suffix to keep the field id unique per section instance
+
+  @example
+  {% render 'facet-sort', sort_options: collection.sort_options, current_sort: collection.sort_by | default: collection.default_sort_by, unique_id: section.id %}
+{% enddoc %}
+
+<div class="collection-sort">
+  <label for="SortBy-{{ unique_id }}">{{ 'products.facets.sort_by' | t }}</label>
+  <select name="sort_by" id="SortBy-{{ unique_id }}" data-sort-select>
+    {%- for option in sort_options -%}
+      <option value="{{ option.value }}" {% if option.value == current_sort %}selected{% endif %}>{{ option.name }}</option>
+    {%- endfor -%}
+  </select>
+</div>
+
+{% stylesheet %}
+  .collection-sort {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    margin-left: auto;
+  }
+  .collection-sort select {
+    border: 1px solid var(--color-border);
+    border-radius: var(--style-border-radius-inputs);
+    padding: 0.4rem 0.6rem;
+    background: var(--color-background);
+    color: var(--color-foreground);
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.addEventListener('change', function (e) {
+    if (e.target.matches('[data-sort-select]')) {
+      var form = e.target.closest('form');
+      if (form) {
+        if (form.requestSubmit) {
+          form.requestSubmit();
+        } else {
+          form.submit();
+        }
+      }
+    }
+  });
+{% endjavascript %}

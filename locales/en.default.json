@@ -5,6 +5,7 @@
       "close": "Close",
       "account": "Account",
       "cart": "Cart",
+      "search": "Search",
       "primary_navigation": "Primary",
       "skip_to_content": "Skip to content"
     }
@@ -98,6 +99,12 @@
     "placeholder": "Search articles, pages, or products",
     "submit": "Search",
     "no_results_html": "No results found for {{ terms }}",
-    "results_for_html": "{{ count }} results found for {{ terms }}"
+    "results_for_html": "{{ count }} results found for {{ terms }}",
+    "tab_all": "All",
+    "tab_products": "Products",
+    "tab_pages_articles": "Pages & articles",
+    "result_type_article": "Article",
+    "result_type_page": "Page",
+    "view_all_results_html": "See all results for {{ terms }}"
   }
 }

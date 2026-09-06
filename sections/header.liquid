@@ -37,6 +37,11 @@
   </nav>
 
   <div class="header__icons">
+    <button type="button" class="header__icon-link header__search-toggle" data-search-toggle>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4" stroke-linecap="round"/></svg>
+      <span class="visually-hidden">{{ 'general.accessibility.search' | t }}</span>
+    </button>
+
     {% if shop.customer_accounts_enabled %}
       <shopify-account menu="{{ section.settings.customer_account_menu }}" class="header__icon-link">
         {{ 'icon-account.svg' | inline_asset_content }}
@@ -76,7 +81,38 @@
       </ul>
     </div>
   </div>
+
+  <div class="search-flyout" data-search-flyout aria-hidden="true">
+    <div class="search-flyout__overlay" data-search-flyout-overlay></div>
+    <div class="search-flyout__panel" role="dialog" aria-modal="true">
+      <predictive-search data-predictive-search-url="{{ routes.predictive_search_url }}">
+        <form action="{{ routes.search_url }}" method="get" role="search" class="search-flyout__form">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4" stroke-linecap="round"/></svg>
+          <input
+            type="search"
+            name="q"
+            value="{{ search.terms | escape }}"
+            placeholder="{{ 'search.placeholder' | t }}"
+            aria-label="{{ 'search.placeholder' | t }}"
+            aria-expanded="false"
+            aria-owns="predictive-search-results"
+            aria-controls="predictive-search-results"
+            aria-haspopup="listbox"
+            aria-autocomplete="list"
+            data-search-input
+          >
+          <button type="button" class="search-flyout__close" data-search-flyout-close>
+            <span class="visually-hidden">{{ 'general.accessibility.close' | t }}</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>
+          </button>
+        </form>
+        <div class="search-flyout__results" data-predictive-search-mount hidden></div>
+      </predictive-search>
+    </div>
+  </div>
 </header>
+
+<script src="{{ 'predictive-search.js' | asset_url }}" defer="defer"></script>
 
 {% stylesheet %}
   .header {
@@ -125,6 +161,76 @@
   }
   .header__icon-link {
     cursor: pointer;
+  }
+  .header__search-toggle {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--color-foreground);
+  }
+
+  .search-flyout {
+    position: fixed;
+    inset: 0;
+    z-index: 110;
+    display: none;
+  }
+  .search-flyout.is-open {
+    display: block;
+  }
+  .search-flyout__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.4);
+  }
+  .search-flyout__panel {
+    position: relative;
+    max-width: 40rem;
+    margin: 10vh auto 0;
+    background: var(--color-background);
+    border-radius: var(--style-border-radius-card);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+  }
+  .search-flyout__form {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .search-flyout__form svg {
+    flex-shrink: 0;
+    color: var(--color-muted);
+  }
+  .search-flyout__form input {
+    flex: 1;
+    border: none;
+    font: inherit;
+    background: none;
+    color: var(--color-foreground);
+  }
+  .search-flyout__form input:focus {
+    outline: none;
+  }
+  .search-flyout__close {
+    background: none;
+    border: none;
+    color: var(--color-foreground);
+    flex-shrink: 0;
+  }
+  .search-flyout__results {
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  @media (max-width: 749px) {
+    .search-flyout__panel {
+      margin: 0;
+      max-width: none;
+      height: 100%;
+      border-radius: 0;
+    }
   }
 
   .header__menu-toggle {
@@ -317,6 +423,34 @@
       if (overlay) overlay.addEventListener('click', closeNav);
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && nav.classList.contains('is-open')) closeNav();
+      });
+    }
+
+    var searchToggle = document.querySelector('[data-search-toggle]');
+    var searchFlyout = document.querySelector('[data-search-flyout]');
+    if (searchToggle && searchFlyout) {
+      var searchOverlay = searchFlyout.querySelector('[data-search-flyout-overlay]');
+      var searchClose = searchFlyout.querySelector('[data-search-flyout-close]');
+      var searchInput = searchFlyout.querySelector('[data-search-input]');
+
+      function openSearch() {
+        searchFlyout.classList.add('is-open');
+        searchFlyout.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        if (searchInput) searchInput.focus();
+      }
+      function closeSearch() {
+        searchFlyout.classList.remove('is-open');
+        searchFlyout.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        searchToggle.focus();
+      }
+
+      searchToggle.addEventListener('click', openSearch);
+      if (searchClose) searchClose.addEventListener('click', closeSearch);
+      if (searchOverlay) searchOverlay.addEventListener('click', closeSearch);
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && searchFlyout.classList.contains('is-open')) closeSearch();
       });
     }
   })();

@@ -1,0 +1,72 @@
+{% doc %}
+  Renders active-filter chips with remove links, plus a "clear all" link,
+  shared by the collection and search result pages.
+
+  @param {object[]} filters - collection.filters or search.filters
+  @param {string} clear_url - URL to reset every filter (keeping q/sort_by as needed)
+
+  @example
+  {% render 'active-filters', filters: collection.filters, clear_url: collection.url %}
+{% enddoc %}
+
+{%- liquid
+  assign has_active_filters = false
+  for filter in filters
+    if filter.type == 'price_range'
+      if filter.min_value.value or filter.max_value.value
+        assign has_active_filters = true
+      endif
+    elsif filter.active_values.size > 0
+      assign has_active_filters = true
+    endif
+  endfor
+-%}
+
+{%- if has_active_filters -%}
+  <div class="active-filters">
+    {%- for filter in filters -%}
+      {%- if filter.type == 'price_range' -%}
+        {%- if filter.min_value.value or filter.max_value.value -%}
+          <a class="active-filter" href="{{ filter.url_to_remove }}">
+            {{ filter.label }}: {{ filter.min_value.value | default: filter.range_min | money }} - {{ filter.max_value.value | default: filter.range_max | money }}
+            <span aria-hidden="true">&times;</span>
+          </a>
+        {%- endif -%}
+      {%- else -%}
+        {%- for value in filter.active_values -%}
+          <a class="active-filter" href="{{ value.url_to_remove }}">
+            {{ filter.label }}: {{ value.label }}
+            <span aria-hidden="true">&times;</span>
+          </a>
+        {%- endfor -%}
+      {%- endif -%}
+    {%- endfor -%}
+    <a class="active-filters__clear" href="{{ clear_url }}">{{ 'products.facets.clear_all' | t }}</a>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .active-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .active-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    padding: 0.3rem 0.75rem;
+    color: inherit;
+    text-decoration: none;
+  }
+  .active-filters__clear {
+    font-size: 0.8rem;
+    color: var(--color-muted);
+    align-self: center;
+    text-decoration: underline;
+  }
+{% endstylesheet %}
