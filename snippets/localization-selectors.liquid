@@ -1,0 +1,107 @@
+{% doc %}
+  Renders language and country/currency selectors using Shopify's
+  built-in localization form. Each selector is a native <details> menu,
+  so it works without JavaScript -- every option is its own submit
+  button carrying the language_code/country_code value.
+
+  Only rendered when the shop actually has more than one available
+  language or market, per Shopify's guidance.
+
+  @example
+  {% render 'localization-selectors' %}
+{% enddoc %}
+
+{%- if localization.available_languages.size > 1 -%}
+  <details class="localization-selector">
+    <summary>{{ localization.language.endonym_name | capitalize }}</summary>
+    {%- form 'localization' -%}
+      <ul class="localization-selector__list" role="list">
+        {%- for language in localization.available_languages -%}
+          <li>
+            <button
+              type="submit"
+              name="language_code"
+              value="{{ language.iso_code }}"
+              lang="{{ language.iso_code }}"
+              {% if language.iso_code == localization.language.iso_code %}aria-current="true"{% endif %}
+            >
+              {{ language.endonym_name | capitalize }}
+            </button>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endform -%}
+  </details>
+{%- endif -%}
+
+{%- if localization.available_countries.size > 1 -%}
+  <details class="localization-selector">
+    <summary>{{ localization.country.name }} ({{ localization.country.currency.iso_code }})</summary>
+    {%- form 'localization' -%}
+      <ul class="localization-selector__list" role="list">
+        {%- for country in localization.available_countries -%}
+          <li>
+            <button
+              type="submit"
+              name="country_code"
+              value="{{ country.iso_code }}"
+              {% if country.iso_code == localization.country.iso_code %}aria-current="true"{% endif %}
+            >
+              {{ country.name }} ({{ country.currency.iso_code }})
+            </button>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endform -%}
+  </details>
+{%- endif -%}
+
+{% stylesheet %}
+  .localization-selector {
+    position: relative;
+    font-size: 0.85rem;
+  }
+  .localization-selector summary {
+    cursor: pointer;
+    list-style: none;
+    color: inherit;
+  }
+  .localization-selector summary::-webkit-details-marker {
+    display: none;
+  }
+  .localization-selector[open] summary {
+    text-decoration: underline;
+  }
+  .localization-selector__list {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    margin-bottom: 0.5rem;
+    min-width: 180px;
+    max-height: 240px;
+    overflow-y: auto;
+    list-style: none;
+    padding: 0.5rem;
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--style-border-radius-card);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    z-index: 10;
+  }
+  .localization-selector__list button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 0.4rem 0.5rem;
+    min-height: auto;
+    font: inherit;
+  }
+  .localization-selector__list button:hover {
+    background: color-mix(in srgb, var(--color-foreground) 6%, transparent);
+  }
+  .localization-selector__list button[aria-current='true'] {
+    font-weight: 600;
+  }
+{% endstylesheet %}

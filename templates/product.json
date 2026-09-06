@@ -8,10 +8,11 @@
         "vendor": { "type": "product-vendor" },
         "price": { "type": "product-price" },
         "variant-picker": { "type": "product-variant-picker" },
+        "selling-plan-selector": { "type": "product-selling-plan-selector" },
         "buy-buttons": { "type": "product-buy-buttons" },
         "description": { "type": "product-description" }
       },
-      "block_order": ["title", "vendor", "price", "variant-picker", "buy-buttons", "description"]
+      "block_order": ["title", "vendor", "price", "variant-picker", "selling-plan-selector", "buy-buttons", "description"]
     }
   },
   "order": [

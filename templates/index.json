@@ -9,12 +9,22 @@
  */
 {
   "sections": {
-    "main": {
-      "type": "hello-world",
-      "settings": {}
+    "hero": {
+      "type": "hero",
+      "settings": {
+        "heading": "Welcome to our store",
+        "subheading": "Quality goods, thoughtfully made.",
+        "button_label": "Shop now",
+        "button_link": "/collections/all"
+      }
+    },
+    "featured-collection": {
+      "type": "featured-collection",
+      "settings": {
+        "heading": "Featured products",
+        "collection": "frontpage"
+      }
     }
   },
-  "order": [
-    "main"
-  ]
+  "order": ["hero", "featured-collection"]
 }

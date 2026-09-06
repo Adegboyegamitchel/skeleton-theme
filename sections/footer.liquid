@@ -49,6 +49,10 @@
         {%- endfor -%}
       </div>
     {%- endif -%}
+
+    <div class="footer__localization">
+      {%- render 'localization-selectors' -%}
+    </div>
   </div>
 </footer>
 
@@ -121,6 +125,10 @@
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
+  }
+  .footer__localization {
+    display: flex;
+    gap: 1rem;
   }
 
   @media (max-width: 749px) {

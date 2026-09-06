@@ -11,11 +11,16 @@
 
 {%- liquid
   assign target_variant = product.selected_or_first_available_variant
+  assign initial_selling_plan_id = ''
+  if product.requires_selling_plan
+    assign initial_selling_plan_id = product.selling_plan_groups.first.selling_plans.first.id
+  endif
 -%}
 
 <div class="buy-buttons" {{ block.shopify_attributes }}>
   {%- form 'product', product, data-buy-buttons-form: true -%}
     <input type="hidden" name="id" value="{{ target_variant.id }}" data-variant-id>
+    <input type="hidden" name="selling_plan" value="{{ initial_selling_plan_id }}" data-selling-plan-id>
 
     <div class="buy-buttons__row">
       <div class="quantity-selector">
@@ -151,6 +156,11 @@
             : addText.getAttribute('data-sold-out-label') || addText.textContent;
         }
         if (dynamicCheckout) dynamicCheckout.hidden = !variant.available;
+      });
+
+      root.addEventListener('selling-plan:change', function (e) {
+        var sellingPlanInput = form.querySelector('[data-selling-plan-id]');
+        if (sellingPlanInput) sellingPlanInput.value = e.detail.sellingPlanId || '';
       });
     }
 

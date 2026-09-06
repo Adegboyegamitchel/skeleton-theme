@@ -24,7 +24,13 @@
             {%- when 'model' -%}
               {{ media | media_tag: reveal: 'interaction' }}
             {%- else -%}
-              {%- render 'image', image: media.preview_image, width: 1200 -%}
+              {%- liquid
+                assign gallery_loading = 'lazy'
+                if media == initial_media
+                  assign gallery_loading = 'eager'
+                endif
+              -%}
+              {%- render 'image', image: media.preview_image, width: 1200, loading: gallery_loading -%}
           {%- endcase -%}
         </div>
       {%- else -%}

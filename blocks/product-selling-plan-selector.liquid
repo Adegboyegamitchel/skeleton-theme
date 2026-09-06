@@ -1,0 +1,108 @@
+{% doc %}
+  Renders a purchase-option selector (one-time purchase vs. one or more
+  subscription selling plans) for products that have selling plan groups
+  configured. Renders nothing for products without any. Dispatches a
+  `selling-plan:change` event on `[data-product-form-root]` so the
+  buy-buttons block can set the hidden `selling_plan` field.
+
+  @example
+  {% content_for 'block', type: 'product-selling-plan-selector', id: 'product-selling-plan-selector' %}
+{% enddoc %}
+
+{%- liquid
+  assign target_variant = product.selected_or_first_available_variant
+  assign allocations = target_variant.selling_plan_allocations
+-%}
+
+{%- if product.selling_plan_groups.size > 0 -%}
+  <fieldset class="selling-plan-selector" {{ block.shopify_attributes }}>
+    <legend class="selling-plan-selector__legend">{{ 'products.product.purchase_options' | t }}</legend>
+
+    {%- unless product.requires_selling_plan -%}
+      <label class="selling-plan-selector__option">
+        <input type="radio" name="SellingPlanOption-{{ block.id }}" value="" checked data-selling-plan-option>
+        <span>{{ 'products.product.one_time_purchase' | t }} &mdash; {{ target_variant.price | money }}</span>
+      </label>
+    {%- endunless -%}
+
+    {%- for group in product.selling_plan_groups -%}
+      {%- for plan in group.selling_plans -%}
+        {%- liquid
+          assign allocation = nil
+          for a in allocations
+            if a.selling_plan.id == plan.id
+              assign allocation = a
+              break
+            endif
+          endfor
+          assign is_first_required = false
+          if product.requires_selling_plan and forloop.first and forloop.parentloop.first
+            assign is_first_required = true
+          endif
+        -%}
+        <label class="selling-plan-selector__option">
+          <input
+            type="radio"
+            name="SellingPlanOption-{{ block.id }}"
+            value="{{ plan.id }}"
+            {% if is_first_required %}checked{% endif %}
+            data-selling-plan-option
+          >
+          <span>
+            {{ group.name }}: {{ plan.name }}
+            {%- if allocation -%}
+              &mdash; {{ allocation.price | money }}
+            {%- endif -%}
+          </span>
+        </label>
+      {%- endfor -%}
+    {%- endfor -%}
+  </fieldset>
+{%- endif -%}
+
+{% stylesheet %}
+  .selling-plan-selector {
+    border: 1px solid var(--color-border);
+    border-radius: var(--style-border-radius-card);
+    padding: 1rem;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .selling-plan-selector__legend {
+    padding: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  .selling-plan-selector__option {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.9rem;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.querySelectorAll('.selling-plan-selector').forEach(function (fieldset) {
+    var root = fieldset.closest('[data-product-form-root]');
+    if (!root) return;
+
+    fieldset.addEventListener('change', function (e) {
+      if (!e.target.matches('[data-selling-plan-option]')) return;
+      root.dispatchEvent(
+        new CustomEvent('selling-plan:change', {
+          bubbles: true,
+          detail: { sellingPlanId: e.target.value || null }
+        })
+      );
+    });
+  });
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:general.product_selling_plan_selector",
+  "settings": []
+}
+{% endschema %}

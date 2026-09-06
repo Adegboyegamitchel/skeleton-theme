@@ -8,7 +8,8 @@
       "search": "Search",
       "primary_navigation": "Primary",
       "skip_to_content": "Skip to content"
-    }
+    },
+    "view_all": "View all"
   },
   "404": {
     "title": "404",
@@ -85,7 +86,9 @@
       "quantity_decrease": "Decrease quantity",
       "quantity_increase": "Increase quantity",
       "pickup_available_at_html": "Pickup available at <strong>{{ location_name }}</strong>",
-      "pickup_unavailable_at_html": "Pickup currently unavailable at <strong>{{ location_name }}</strong>"
+      "pickup_unavailable_at_html": "Pickup currently unavailable at <strong>{{ location_name }}</strong>",
+      "purchase_options": "Purchase options",
+      "one_time_purchase": "One-time purchase"
     },
     "facets": {
       "filter_and_sort": "Filter and sort",

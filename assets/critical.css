@@ -146,6 +146,10 @@ button,
   min-height: 44px;
   min-width: 44px;
   padding: 0.75em 1.5em;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Shared rich-text content styling (product/article/page descriptions,
