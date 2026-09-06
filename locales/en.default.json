@@ -26,8 +26,13 @@
   "cart": {
     "checkout": "Checkout",
     "title": "Cart",
-    "update": "Update",
-    "remove": "Remove"
+    "update": "Update cart",
+    "remove": "Remove",
+    "empty": "Your cart is empty.",
+    "continue_shopping": "Continue shopping",
+    "note": "Order note",
+    "subtotal": "Subtotal",
+    "taxes_and_shipping_at_checkout": "Taxes and shipping calculated at checkout"
   },
   "customers": {
     "login": {

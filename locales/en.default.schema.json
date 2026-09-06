@@ -71,7 +71,8 @@
     "products_per_page": "Products per page",
     "columns_desktop": "Desktop columns",
     "enable_filtering": "Enable filtering",
-    "enable_sorting": "Enable sorting"
+    "enable_sorting": "Enable sorting",
+    "enable_cart_note": "Enable order note"
   },
   "info": {
     "contrast_note": "Keep this dark/light enough for WCAG AA contrast (4.5:1) wherever it's used as text."
