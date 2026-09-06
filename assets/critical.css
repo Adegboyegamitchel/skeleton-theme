@@ -74,8 +74,78 @@ p:empty {
 /** Theme styles below */
 body {
   font-family: var(--font-primary--family);
+  font-style: var(--font-primary--style);
+  font-weight: var(--font-primary--weight);
   background-color: var(--color-background);
   color: var(--color-foreground);
+  line-height: 1.5;
+}
+
+a {
+  color: inherit;
+}
+
+/* Headings share the heading font but keep a visually distinct scale --
+   Theme Store accessibility requirement: headings must be visually
+   different from one another, not just semantically. */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading--family);
+  font-style: var(--font-heading--style);
+  font-weight: var(--font-heading--weight);
+  line-height: 1.15;
+}
+h1 { font-size: clamp(2rem, 1.6rem + 2vw, 3.5rem); }
+h2 { font-size: clamp(1.6rem, 1.35rem + 1.25vw, 2.5rem); }
+h3 { font-size: clamp(1.3rem, 1.15rem + 0.75vw, 1.75rem); }
+h4 { font-size: 1.25rem; }
+h5 { font-size: 1.1rem; }
+h6 { font-size: 1rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+/* Visible keyboard focus everywhere -- required for Theme Store
+   accessibility review (keyboard navigable with visible focus states). */
+:focus-visible {
+  outline: 2px solid var(--color-foreground);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-to-content {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 1000;
+  background: var(--color-foreground);
+  color: var(--color-background);
+  padding: 12px 20px;
+  border-radius: 0 0 var(--style-border-radius-card) 0;
+}
+.skip-to-content:focus {
+  left: 0;
+}
+
+/* Shared button foundation. Component-specific variants (primary/
+   secondary/etc.) are defined per-section, but the reset and base shape
+   belong here since buttons appear across every template. */
+button,
+.button {
+  font: inherit;
+  border-radius: var(--style-border-radius-button);
+  border: 1px solid transparent;
+  cursor: pointer;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.75em 1.5em;
 }
 
 /** Section layout utilities */

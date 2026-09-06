@@ -17,6 +17,7 @@
     "footer": "Footer",
     "group": "Group",
     "header": "Header",
+    "heading": "Heading",
     "layout": "Layout",
     "main": "Main",
     "page": "Page",
@@ -37,6 +38,14 @@
     "alignment": "Alignment",
     "background": "Background",
     "foreground": "Foreground",
+    "muted": "Muted text",
+    "border": "Border",
+    "accent": "Accent",
+    "accent_foreground": "Accent foreground (text on accent)",
+    "sale": "Sale",
+    "heading_font": "Heading font",
+    "card_corner_radius": "Card corner radius",
+    "button_corner_radius": "Button corner radius",
     "grid_gap": "Grid spacing",
     "grid_item_width": "Grid item width",
     "input_corner_radius": "Input corner radius",
@@ -49,6 +58,9 @@
     "show_payment_icons": "Show payment icons",
     "text_style": "Text style",
     "text": "Text"
+  },
+  "info": {
+    "contrast_note": "Keep this dark/light enough for WCAG AA contrast (4.5:1) wherever it's used as text."
   },
   "options": {
     "alignment": {

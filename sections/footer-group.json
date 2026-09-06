@@ -14,9 +14,25 @@
     "footer": {
       "type": "footer",
       "settings": {
-        "menu": "",
         "show_payment_icons": true
-      }
+      },
+      "blocks": {
+        "shop": {
+          "type": "link_list",
+          "settings": {
+            "heading": "Shop",
+            "menu": "main-menu"
+          }
+        },
+        "help": {
+          "type": "link_list",
+          "settings": {
+            "heading": "Help",
+            "menu": "footer"
+          }
+        }
+      },
+      "block_order": ["shop", "help"]
     }
   },
   "order": [
