@@ -1,0 +1,27 @@
+{% comment %}
+  Lets merchants (or apps, via the theme editor) drop in arbitrary Liquid
+  -- an escape hatch for one-off content the built-in sections don't
+  cover.
+{% endcomment %}
+
+<div class="custom-liquid">
+  {{ section.settings.custom_liquid }}
+</div>
+
+{% schema %}
+{
+  "name": "t:general.custom_liquid",
+  "settings": [
+    {
+      "type": "liquid",
+      "id": "custom_liquid",
+      "label": "t:labels.custom_liquid"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:general.custom_liquid"
+    }
+  ]
+}
+{% endschema %}

@@ -5,6 +5,7 @@
       {%- if section.settings.tagline != blank -%}
         <p class="footer__tagline">{{ section.settings.tagline }}</p>
       {%- endif -%}
+      {%- render 'social-icons' -%}
     </div>
 
     {%- for block in section.blocks -%}
@@ -75,6 +76,9 @@
     color: var(--color-muted);
     margin: 0;
     max-width: 32ch;
+  }
+  .footer__brand .social-icons {
+    margin-top: 1rem;
   }
   .footer__heading {
     font-size: 0.8rem;

@@ -73,6 +73,12 @@
       </div>
     {%- endif -%}
   {%- endif -%}
+
+  {%- if block.settings.show_follow_on_shop -%}
+    <div class="buy-buttons__follow-on-shop">
+      {{ shop | login_button: action: 'follow' }}
+    </div>
+  {%- endif -%}
 </div>
 
 {% stylesheet %}
@@ -133,6 +139,9 @@
   .buy-buttons__pickup-title {
     margin: 0;
     font-size: 0.85rem;
+  }
+  .buy-buttons__follow-on-shop {
+    display: flex;
   }
 {% endstylesheet %}
 
@@ -217,6 +226,12 @@
       "type": "checkbox",
       "id": "show_pickup_availability",
       "label": "t:labels.show_pickup_availability",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_follow_on_shop",
+      "label": "t:labels.show_follow_on_shop",
       "default": true
     }
   ]

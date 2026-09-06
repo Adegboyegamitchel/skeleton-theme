@@ -13,9 +13,19 @@
         "description": { "type": "product-description" }
       },
       "block_order": ["title", "vendor", "price", "variant-picker", "selling-plan-selector", "buy-buttons", "description"]
+    },
+    "complementary-products": {
+      "type": "product-recommendations",
+      "settings": {
+        "intent": "complementary"
+      }
+    },
+    "related-products": {
+      "type": "product-recommendations",
+      "settings": {
+        "intent": "related"
+      }
     }
   },
-  "order": [
-    "main"
-  ]
+  "order": ["main", "complementary-products", "related-products"]
 }

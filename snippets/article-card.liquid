@@ -24,11 +24,7 @@
     <h3 class="article-card__title">
       <a href="{{ article.url }}">{{ article.title | escape }}</a>
     </h3>
-    {%- if article.excerpt != blank -%}
-      <p class="article-card__excerpt">{{ article.excerpt }}</p>
-    {%- else -%}
-      <p class="article-card__excerpt">{{ article.content | strip_html | truncatewords: 25 }}</p>
-    {%- endif -%}
+    <p class="article-card__excerpt">{{ article.excerpt_or_content | strip_html | truncatewords: 25 }}</p>
   </div>
 </article>
 

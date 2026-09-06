@@ -68,6 +68,11 @@
                 <span class="cart-item__price-compare">{{ item.original_line_price | money }}</span>
               {%- endif -%}
               <span>{{ item.final_line_price | money }}</span>
+              {%- if item.unit_price_measurement -%}
+                <span class="cart-item__unit-price">
+                  {{ item.unit_price | money }}/{% if item.unit_price_measurement.reference_value != 1 %}{{ item.unit_price_measurement.reference_value }} {% endif %}{{ item.unit_price_measurement.reference_unit }}
+                </span>
+              {%- endif -%}
             </div>
           </li>
         {%- endfor -%}
@@ -97,9 +102,22 @@
           <span>{{ 'cart.subtotal' | t }}</span>
           <span>{{ cart.total_price | money }}</span>
         </div>
-        <p class="cart-summary__note">{{ 'cart.taxes_and_shipping_at_checkout' | t }}</p>
+        <p class="cart-summary__note">
+          {%- if cart.taxes_included -%}
+            {{ 'cart.taxes_included_shipping_at_checkout' | t }}
+          {%- else -%}
+            {{ 'cart.taxes_and_shipping_at_checkout' | t }}
+          {%- endif -%}
+        </p>
 
         <button type="submit" name="checkout" class="button cart-summary__checkout">{{ 'cart.checkout' | t }}</button>
+
+        {%- if additional_checkout_buttons -%}
+          <div class="cart-summary__accelerated-checkout">
+            {{ content_for_additional_checkout_buttons }}
+          </div>
+        {%- endif -%}
+
         <a class="cart-summary__continue" href="{{ routes.all_products_collection_url }}">{{ 'cart.continue_shopping' | t }}</a>
       </div>
     </form>
@@ -206,6 +224,11 @@
     text-decoration: line-through;
     font-size: 0.85rem;
   }
+  .cart-item__unit-price {
+    font-weight: 400;
+    color: var(--color-muted);
+    font-size: 0.75rem;
+  }
   .cart-note {
     display: flex;
     flex-direction: column;
@@ -248,6 +271,11 @@
   }
   .cart-summary__checkout {
     margin-top: 0.5rem;
+  }
+  .cart-summary__accelerated-checkout {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
   }
   .cart-summary__continue {
     text-align: center;

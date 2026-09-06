@@ -30,6 +30,9 @@
   {%- else -%}
     <span class="product-price__unit" data-unit-price hidden></span>
   {%- endif -%}
+  {%- if cart.taxes_included -%}
+    <span class="product-price__tax-note">{{ 'products.product.tax_included' | t }}</span>
+  {%- endif -%}
 </div>
 
 {% stylesheet %}
@@ -60,6 +63,11 @@
     width: 100%;
     color: var(--color-muted);
     font-size: 0.8rem;
+  }
+  .product-price__tax-note {
+    width: 100%;
+    color: var(--color-muted);
+    font-size: 0.75rem;
   }
 {% endstylesheet %}
 

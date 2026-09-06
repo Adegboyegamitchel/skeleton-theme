@@ -25,6 +25,7 @@
     "comment_form_submit": "Post",
     "comment_form_title": "Add a comment",
     "comment_posted": "Your comment has been posted.",
+    "comment_pending_moderation": "Your comment has been submitted and is awaiting approval.",
     "all_tags": "All",
     "no_articles": "No articles yet.",
     "back_to_blog": "Back to {{ blog }}"
@@ -38,7 +39,8 @@
     "continue_shopping": "Continue shopping",
     "note": "Order note",
     "subtotal": "Subtotal",
-    "taxes_and_shipping_at_checkout": "Taxes and shipping calculated at checkout"
+    "taxes_and_shipping_at_checkout": "Taxes and shipping calculated at checkout",
+    "taxes_included_shipping_at_checkout": "Tax included. Shipping calculated at checkout"
   },
   "contact": {
     "form": {
@@ -73,6 +75,14 @@
     "submit": "Sign up",
     "success": "Thanks for signing up!"
   },
+  "social": {
+    "facebook": "Facebook",
+    "instagram": "Instagram",
+    "tiktok": "TikTok",
+    "x": "X",
+    "youtube": "YouTube",
+    "pinterest": "Pinterest"
+  },
   "password": {
     "title": "Enter using password",
     "password": "Password",
@@ -93,6 +103,9 @@
       "pickup_available_at_html": "Pickup available at <strong>{{ location_name }}</strong>",
       "pickup_unavailable_at_html": "Pickup currently unavailable at <strong>{{ location_name }}</strong>",
       "purchase_options": "Purchase options",
+      "tax_included": "Tax included",
+      "related_products": "You may also like",
+      "complementary_products": "Pair it with",
       "one_time_purchase": "One-time purchase"
     },
     "facets": {

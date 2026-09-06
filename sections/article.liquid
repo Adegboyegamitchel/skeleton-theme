@@ -56,7 +56,11 @@
         {{ form.errors | default_errors }}
 
         {%- if form.posted_successfully? -%}
-          <p class="article-comments__success">{{ 'blog.comment_posted' | t }}</p>
+          {%- if blog.moderated? -%}
+            <p class="article-comments__success">{{ 'blog.comment_pending_moderation' | t }}</p>
+          {%- else -%}
+            <p class="article-comments__success">{{ 'blog.comment_posted' | t }}</p>
+          {%- endif -%}
         {%- endif -%}
 
         <div class="form-field">

@@ -1,0 +1,104 @@
+{% comment %}
+  Product recommendations (related or complementary, per the intent
+  setting), loaded lazily via the Product Recommendations API once the
+  section scrolls into view. Add two instances of this section to a
+  product template -- one set to "related", one to "complementary" -- to
+  cover both mandatory recommendation types.
+
+  https://shopify.dev/docs/storefronts/themes/product-merchandising/recommendations
+{% endcomment %}
+
+<div
+  class="product-recommendations"
+  data-product-recommendations
+  data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit={{ section.settings.products_to_show }}&intent={{ section.settings.intent }}"
+>
+  {%- if recommendations.performed? and recommendations.products_count > 0 -%}
+    <h2 class="product-recommendations__heading">
+      {%- if recommendations.intent == 'complementary' -%}
+        {{ 'products.product.complementary_products' | t }}
+      {%- else -%}
+        {{ 'products.product.related_products' | t }}
+      {%- endif -%}
+    </h2>
+    <div class="product-grid" style="--columns-desktop: {{ section.settings.products_to_show }}">
+      {%- for product in recommendations.products -%}
+        {%- render 'product-card', product: product -%}
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .product-recommendations__heading {
+    margin-bottom: 1.5rem;
+  }
+  .product-recommendations .product-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--columns-desktop, 4), 1fr);
+    gap: 1.5rem 1.25rem;
+  }
+
+  @media (max-width: 989px) {
+    .product-recommendations .product-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.querySelectorAll('[data-product-recommendations]').forEach(function (section) {
+    var observer = new IntersectionObserver(
+      function (entries) {
+        if (!entries[0].isIntersecting) return;
+        observer.unobserve(section);
+
+        fetch(section.dataset.url)
+          .then(function (response) { return response.text(); })
+          .then(function (text) {
+            var html = document.createElement('div');
+            html.innerHTML = text;
+            var recommendations = html.querySelector('[data-product-recommendations]');
+            if (recommendations && recommendations.innerHTML.trim().length) {
+              section.innerHTML = recommendations.innerHTML;
+            }
+          })
+          .catch(function (error) { console.error(error); });
+      },
+      { rootMargin: '0px 0px 200px 0px' }
+    );
+    observer.observe(section);
+  });
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:general.product_recommendations",
+  "settings": [
+    {
+      "type": "select",
+      "id": "intent",
+      "label": "t:labels.recommendation_intent",
+      "options": [
+        { "value": "related", "label": "t:options.recommendation_intent.related" },
+        { "value": "complementary", "label": "t:options.recommendation_intent.complementary" }
+      ],
+      "default": "related"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "label": "t:labels.products_to_show",
+      "default": 4
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:general.product_recommendations"
+    }
+  ]
+}
+{% endschema %}

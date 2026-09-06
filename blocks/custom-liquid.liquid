@@ -1,0 +1,25 @@
+{% doc %}
+  A raw-Liquid escape hatch block, addable anywhere theme blocks are
+  supported (e.g. the product page's info column) -- an app insertion
+  point for apps that ship a Liquid snippet rather than an app block.
+
+  @example
+  {% content_for 'block', type: 'custom-liquid', id: 'custom-liquid' %}
+{% enddoc %}
+
+<div class="custom-liquid" {{ block.shopify_attributes }}>
+  {{ block.settings.custom_liquid }}
+</div>
+
+{% schema %}
+{
+  "name": "t:general.custom_liquid",
+  "settings": [
+    {
+      "type": "liquid",
+      "id": "custom_liquid",
+      "label": "t:labels.custom_liquid"
+    }
+  ]
+}
+{% endschema %}
