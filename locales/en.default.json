@@ -52,6 +52,42 @@
     "password": "Password",
     "enter": "Enter"
   },
+  "products": {
+    "product": {
+      "add_to_cart": "Add to cart",
+      "sold_out": "Sold out",
+      "on_sale": "Sale",
+      "quantity": "Quantity",
+      "quantity_decrease": "Decrease quantity",
+      "quantity_increase": "Increase quantity",
+      "pickup_available_at_html": "Pickup available at <strong>{{ location_name }}</strong>",
+      "pickup_unavailable_at_html": "Pickup currently unavailable at <strong>{{ location_name }}</strong>"
+    },
+    "facets": {
+      "filter_and_sort": "Filter and sort",
+      "sort_by": "Sort by",
+      "from": "From",
+      "to": "To",
+      "apply": "Apply",
+      "clear_all": "Clear all",
+      "no_matches": "No products found. Try removing some filters.",
+      "from_price_html": "From {{ price }}",
+      "product_count": {
+        "one": "{{ count }} product",
+        "other": "{{ count }} products"
+      },
+      "sort_options": {
+        "manual": "Featured",
+        "best_selling": "Best selling",
+        "title_ascending": "Alphabetically, A-Z",
+        "title_descending": "Alphabetically, Z-A",
+        "price_ascending": "Price, low to high",
+        "price_descending": "Price, high to low",
+        "created_descending": "Date, new to old",
+        "created_ascending": "Date, old to new"
+      }
+    }
+  },
   "search": {
     "title": "Search",
     "placeholder": "Search articles, pages, or products",

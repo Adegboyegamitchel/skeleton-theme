@@ -1,0 +1,27 @@
+{% doc %}
+  Renders the current product's vendor.
+
+  @example
+  {% content_for 'block', type: 'product-vendor', id: 'product-vendor' %}
+{% enddoc %}
+
+{%- if product.vendor != blank -%}
+  <p class="product-vendor" {{ block.shopify_attributes }}>{{ product.vendor }}</p>
+{%- endif -%}
+
+{% stylesheet %}
+  .product-vendor {
+    margin: 0;
+    color: var(--color-muted);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.product_vendor",
+  "settings": []
+}
+{% endschema %}

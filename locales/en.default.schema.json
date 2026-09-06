@@ -24,6 +24,13 @@
     "password": "Password",
     "primary": "Primary",
     "product": "Product",
+    "product_title": "Product title",
+    "product_vendor": "Product vendor",
+    "product_price": "Product price",
+    "product_description": "Product description",
+    "product_variant_picker": "Variant picker",
+    "product_buy_buttons": "Buy buttons",
+    "product_media": "Product media",
     "row": "Row",
     "search": "Search",
     "secondary": "Secondary",
@@ -56,8 +63,15 @@
     "page_margin": "Page margin",
     "page_width": "Page width",
     "show_payment_icons": "Show payment icons",
+    "show_accelerated_checkout": "Show accelerated checkout (Shop Pay, PayPal, etc.)",
+    "show_installments": "Show Shop Pay Installments messaging",
+    "show_pickup_availability": "Show local pickup availability",
     "text_style": "Text style",
-    "text": "Text"
+    "text": "Text",
+    "products_per_page": "Products per page",
+    "columns_desktop": "Desktop columns",
+    "enable_filtering": "Enable filtering",
+    "enable_sorting": "Enable sorting"
   },
   "info": {
     "contrast_note": "Keep this dark/light enough for WCAG AA contrast (4.5:1) wherever it's used as text."

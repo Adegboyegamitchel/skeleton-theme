@@ -1,0 +1,101 @@
+{% doc %}
+  Renders the selected variant's price, compare-at price, sale badge, and
+  unit price. Updates live on variant change via the `variant:change`
+  event dispatched by the variant-picker block.
+
+  @example
+  {% content_for 'block', type: 'product-price', id: 'product-price' %}
+{% enddoc %}
+
+{%- liquid
+  assign target_variant = product.selected_or_first_available_variant
+  assign compare_at = target_variant.compare_at_price
+  assign price = target_variant.price
+  assign on_sale = false
+  if compare_at > price
+    assign on_sale = true
+  endif
+-%}
+
+<div class="product-price" id="ProductPrice-{{ block.id }}" {{ block.shopify_attributes }}>
+  <span class="product-price__current" data-price>{{ price | money }}</span>
+  <span class="product-price__compare" data-compare-price {% unless on_sale %}hidden{% endunless %}>{{ compare_at | money }}</span>
+  {%- if on_sale -%}
+    <span class="product-price__badge" data-sale-badge>{{ 'products.product.on_sale' | t }}</span>
+  {%- endif -%}
+  {%- if target_variant.unit_price_measurement -%}
+    <span class="product-price__unit" data-unit-price>
+      {{ target_variant.unit_price | money }}/{% if target_variant.unit_price_measurement.reference_value != 1 %}{{ target_variant.unit_price_measurement.reference_value }} {% endif %}{{ target_variant.unit_price_measurement.reference_unit }}
+    </span>
+  {%- else -%}
+    <span class="product-price__unit" data-unit-price hidden></span>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .product-price {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 1.25rem;
+  }
+  .product-price__current {
+    font-weight: 700;
+  }
+  .product-price__compare {
+    color: var(--color-muted);
+    text-decoration: line-through;
+    font-size: 1rem;
+  }
+  .product-price__badge {
+    background: color-mix(in srgb, var(--color-sale) 15%, transparent);
+    color: var(--color-sale);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.15em 0.6em;
+    border-radius: 999px;
+  }
+  .product-price__unit {
+    width: 100%;
+    color: var(--color-muted);
+    font-size: 0.8rem;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.addEventListener('variant:change', function (e) {
+    var root = e.target.closest('[data-product-form-root]');
+    if (!root) return;
+    var priceEl = root.querySelector('[data-price]');
+    var comparePriceEl = root.querySelector('[data-compare-price]');
+    var unitPriceEl = root.querySelector('[data-unit-price]');
+    var variant = e.detail.variant;
+    if (!variant) return;
+
+    if (priceEl) priceEl.textContent = variant.price;
+    if (comparePriceEl) {
+      if (variant.compareAtPrice) {
+        comparePriceEl.textContent = variant.compareAtPrice;
+        comparePriceEl.hidden = false;
+      } else {
+        comparePriceEl.hidden = true;
+      }
+    }
+    if (unitPriceEl) {
+      if (variant.unitPrice) {
+        unitPriceEl.textContent = variant.unitPrice;
+        unitPriceEl.hidden = false;
+      } else {
+        unitPriceEl.hidden = true;
+      }
+    }
+  });
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:general.product_price",
+  "settings": []
+}
+{% endschema %}

@@ -1,0 +1,214 @@
+{% doc %}
+  Renders the quantity selector, add-to-cart form, accelerated checkout
+  button, and Shop Pay Installments messaging for the current product.
+  Keeps its own <form> (rather than sharing one with the variant-picker
+  block) so it stays functional regardless of block order/removal --
+  syncs its hidden variant id input via the `variant:change` event.
+
+  @example
+  {% content_for 'block', type: 'product-buy-buttons', id: 'product-buy-buttons' %}
+{% enddoc %}
+
+{%- liquid
+  assign target_variant = product.selected_or_first_available_variant
+-%}
+
+<div class="buy-buttons" {{ block.shopify_attributes }}>
+  {%- form 'product', product, data-buy-buttons-form: true -%}
+    <input type="hidden" name="id" value="{{ target_variant.id }}" data-variant-id>
+
+    <div class="buy-buttons__row">
+      <div class="quantity-selector">
+        <button type="button" data-quantity-minus aria-label="{{ 'products.product.quantity_decrease' | t }}">&minus;</button>
+        <input type="number" name="quantity" min="1" value="1" data-quantity-input aria-label="{{ 'products.product.quantity' | t }}">
+        <button type="button" data-quantity-plus aria-label="{{ 'products.product.quantity_increase' | t }}">&plus;</button>
+      </div>
+
+      <button
+        type="submit"
+        class="button buy-buttons__add"
+        data-add-to-cart
+        {% unless target_variant.available %}disabled{% endunless %}
+      >
+        <span
+          data-add-to-cart-text
+          data-add-label="{{ 'products.product.add_to_cart' | t }}"
+          data-sold-out-label="{{ 'products.product.sold_out' | t }}"
+        >
+          {%- if target_variant.available -%}{{ 'products.product.add_to_cart' | t }}{%- else -%}{{ 'products.product.sold_out' | t }}{%- endif -%}
+        </span>
+      </button>
+    </div>
+
+    {%- if block.settings.show_accelerated_checkout and target_variant.available -%}
+      <div class="buy-buttons__dynamic-checkout" data-dynamic-checkout {% unless target_variant.available %}hidden{% endunless %}>
+        {{ form | payment_button }}
+      </div>
+    {%- endif -%}
+
+    {%- if block.settings.show_installments -%}
+      <div class="buy-buttons__installments" data-installments>
+        {{ form | payment_terms }}
+      </div>
+    {%- endif -%}
+  {%- endform -%}
+
+  {%- if block.settings.show_pickup_availability -%}
+    {%- liquid
+      assign pickup_locations = target_variant.store_availabilities | where: 'pick_up_enabled', true
+      assign closest_pickup = pickup_locations.first
+    -%}
+    {%- if closest_pickup -%}
+      <div class="buy-buttons__pickup" data-pickup-availability data-variant-id="{{ target_variant.id }}">
+        {%- if closest_pickup.available -%}
+          <p class="buy-buttons__pickup-title">{{ 'products.product.pickup_available_at_html' | t: location_name: closest_pickup.location.name }}</p>
+        {%- else -%}
+          <p class="buy-buttons__pickup-title">{{ 'products.product.pickup_unavailable_at_html' | t: location_name: closest_pickup.location.name }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .buy-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .buy-buttons__row {
+    display: flex;
+    gap: 0.75rem;
+  }
+  .quantity-selector {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--color-border);
+    border-radius: var(--style-border-radius-button);
+  }
+  .quantity-selector button {
+    background: none;
+    border: none;
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 1.1rem;
+  }
+  .quantity-selector input {
+    width: 3ch;
+    border: none;
+    text-align: center;
+    background: none;
+    -moz-appearance: textfield;
+  }
+  .quantity-selector input::-webkit-outer-spin-button,
+  .quantity-selector input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .buy-buttons__add {
+    flex: 1;
+    background: var(--color-foreground);
+    color: var(--color-background);
+    border-color: var(--color-foreground);
+    font-weight: 600;
+  }
+  .buy-buttons__add:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .buy-buttons__installments {
+    font-size: 0.85rem;
+    color: var(--color-muted);
+  }
+  .buy-buttons__pickup {
+    border: 1px solid var(--color-border);
+    border-radius: var(--style-border-radius-card);
+    padding: 0.75rem 1rem;
+  }
+  .buy-buttons__pickup-title {
+    margin: 0;
+    font-size: 0.85rem;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.querySelectorAll('[data-buy-buttons-form]').forEach(function (form) {
+    var root = form.closest('[data-product-form-root]');
+    var idInput = form.querySelector('[data-variant-id]');
+    var addButton = form.querySelector('[data-add-to-cart]');
+    var addText = form.querySelector('[data-add-to-cart-text]');
+    var dynamicCheckout = form.parentElement.querySelector('[data-dynamic-checkout]');
+
+    if (root) {
+      root.addEventListener('variant:change', function (e) {
+        var variant = e.detail.variant;
+        if (!variant) return;
+        idInput.value = variant.id;
+        addButton.disabled = !variant.available;
+        if (addText) {
+          addText.textContent = variant.available
+            ? addText.getAttribute('data-add-label') || addText.textContent
+            : addText.getAttribute('data-sold-out-label') || addText.textContent;
+        }
+        if (dynamicCheckout) dynamicCheckout.hidden = !variant.available;
+      });
+    }
+
+    var minus = form.querySelector('[data-quantity-minus]');
+    var plus = form.querySelector('[data-quantity-plus]');
+    var qtyInput = form.querySelector('[data-quantity-input]');
+    if (minus && plus && qtyInput) {
+      minus.addEventListener('click', function () {
+        qtyInput.value = Math.max(1, (parseInt(qtyInput.value, 10) || 1) - 1);
+      });
+      plus.addEventListener('click', function () {
+        qtyInput.value = (parseInt(qtyInput.value, 10) || 1) + 1;
+      });
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var formData = new FormData(form);
+      fetch(window.Shopify && window.Shopify.routes && window.Shopify.routes.cart_add_url ? window.Shopify.routes.cart_add_url : '/cart/add', {
+        method: 'POST',
+        headers: { Accept: 'application/json' },
+        body: formData
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          if (data.status) {
+            console.error(data.description || 'Could not add to cart');
+            return;
+          }
+          document.dispatchEvent(new CustomEvent('cart:updated', { bubbles: true, detail: { item: data } }));
+        })
+        .catch(function (err) { console.error(err); });
+    });
+  });
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:general.product_buy_buttons",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_accelerated_checkout",
+      "label": "t:labels.show_accelerated_checkout",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_installments",
+      "label": "t:labels.show_installments",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_pickup_availability",
+      "label": "t:labels.show_pickup_availability",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

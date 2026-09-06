@@ -1,0 +1,152 @@
+{% doc %}
+  Renders selectable option pickers for the current product's variants.
+  Dispatches a `variant:change` CustomEvent (detail: { variant }) on the
+  closest [data-product-form-root] whenever the selection resolves to a
+  different variant, which other blocks (price, buy-buttons, media
+  gallery) listen for to stay in sync without needing a shared <form>.
+
+  @example
+  {% content_for 'block', type: 'product-variant-picker', id: 'product-variant-picker' %}
+{% enddoc %}
+
+{%- if product.has_only_default_variant == false -%}
+  <div class="variant-picker" {{ block.shopify_attributes }}>
+    <script type="application/json" data-variant-data>
+      [
+        {%- for variant in product.variants -%}
+          {
+            "id": {{ variant.id | json }},
+            "title": {{ variant.title | json }},
+            "available": {{ variant.available | json }},
+            "options": {{ variant.options | json }},
+            "price": {{ variant.price | money | json }},
+            "compareAtPrice": {% if variant.compare_at_price > variant.price %}{{ variant.compare_at_price | money | json }}{% else %}null{% endif %},
+            "unitPrice": {% if variant.unit_price_measurement %}{{ variant.unit_price | money | json }}{% else %}null{% endif %},
+            "featuredImage": {% if variant.featured_image %}{{ variant.featured_image | image_url: width: 1200 | json }}{% else %}null{% endif %},
+            "url": {{ variant.url | within: product | json }}
+          }{% unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+      ]
+    </script>
+
+    {%- for option in product.options_with_values -%}
+      <div class="variant-picker__option">
+        <span class="variant-picker__label">{{ option.name }}</span>
+        <div class="variant-picker__values" data-option-index="{{ forloop.index0 }}">
+          {%- for value in option.values -%}
+            <label class="variant-picker__value{% if value == option.selected_value %} is-selected{% endif %}{% unless value.available %} is-unavailable{% endunless %}">
+              <input
+                type="radio"
+                name="option-{{ forloop.parentloop.index0 }}"
+                value="{{ value | escape }}"
+                {% if value == option.selected_value %}checked{% endif %}
+                class="visually-hidden"
+              >
+              {{ value }}
+            </label>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endfor -%}
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .variant-picker {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .variant-picker__label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  .variant-picker__values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .variant-picker__value {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--style-border-radius-inputs);
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  .variant-picker__value.is-selected {
+    border-color: var(--color-foreground);
+    outline: 1px solid var(--color-foreground);
+  }
+  .variant-picker__value.is-unavailable {
+    color: var(--color-muted);
+    text-decoration: line-through;
+    opacity: 0.6;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.querySelectorAll('.variant-picker').forEach(function (picker) {
+    var root = picker.closest('[data-product-form-root]');
+    if (!root) return;
+    var variants = JSON.parse(picker.querySelector('[data-variant-data]').textContent);
+    var optionGroups = Array.from(picker.querySelectorAll('[data-option-index]'));
+
+    function currentSelection() {
+      return optionGroups.map(function (group) {
+        var checked = group.querySelector('input:checked');
+        return checked ? checked.value : null;
+      });
+    }
+
+    function findVariant() {
+      var selection = currentSelection();
+      return variants.find(function (variant) {
+        return variant.options.every(function (opt, i) {
+          return opt === selection[i];
+        });
+      });
+    }
+
+    function updateSelectedStyles() {
+      optionGroups.forEach(function (group) {
+        group.querySelectorAll('.variant-picker__value').forEach(function (label) {
+          var input = label.querySelector('input');
+          label.classList.toggle('is-selected', input.checked);
+        });
+      });
+    }
+
+    function emitChange() {
+      var variant = findVariant();
+      updateSelectedStyles();
+      if (!variant) return;
+      if (window.history && window.history.replaceState) {
+        var url = new URL(window.location.href);
+        url.searchParams.set('variant', variant.id);
+        window.history.replaceState({}, '', url);
+      }
+      root.dispatchEvent(new CustomEvent('variant:change', { bubbles: true, detail: { variant: variant } }));
+    }
+
+    picker.addEventListener('change', function (e) {
+      if (e.target.matches('input[type="radio"]')) emitChange();
+    });
+
+    // Fire once on load so dependent blocks (price, buy-buttons) initialize
+    // from the currently-selected options.
+    emitChange();
+  });
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:general.product_variant_picker",
+  "settings": []
+}
+{% endschema %}

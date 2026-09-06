@@ -1,17 +1,17 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "sections": {
     "main": {
       "type": "product",
-      "settings": {}
+      "settings": {},
+      "blocks": {
+        "title": { "type": "product-title" },
+        "vendor": { "type": "product-vendor" },
+        "price": { "type": "product-price" },
+        "variant-picker": { "type": "product-variant-picker" },
+        "buy-buttons": { "type": "product-buy-buttons" },
+        "description": { "type": "product-description" }
+      },
+      "block_order": ["title", "vendor", "price", "variant-picker", "buy-buttons", "description"]
     }
   },
   "order": [

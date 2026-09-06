@@ -1,49 +1,158 @@
 {% comment %}
-  This section is used in the product template to render product page with
-  media, content, and add-to-cart form.
+  Main product page. Media gallery is fixed markup (stateful, not
+  merchant-reorderable); the info column is fully block-based so
+  merchants can add/remove/reorder individual elements (title, vendor,
+  price, variant picker, buy buttons, description, app blocks, etc.)
+  per Theme Store requirements.
 
   https://shopify.dev/docs/storefronts/themes/architecture/templates/product
 {% endcomment %}
 
-<div class="product-images">
-  {% for image in product.images %}
-    {% render 'image', class: 'product-image', image: image %}
-  {% endfor %}
-</div>
-
-<div class="product-info">
-  <h1>{{ product.title }}</h1>
-  <p>{{ product.price | money }}</p>
-  <p>{{ product.description }}</p>
-</div>
-
-<div class="product-form">
-  {% form 'product', product %}
-    {% assign current_variant = product.selected_or_first_available_variant %}
-
-    <select name="id">
-      {% for variant in product.variants %}
-        <option
-          value="{{ variant.id }}"
-          {% if variant == current_variant %}
-            selected="selected"
-          {% endif %}
+<div class="product-page" data-product-form-root>
+  <div class="product-gallery">
+    <div class="product-gallery__main" data-gallery-main>
+      {%- assign initial_media = product.selected_or_first_available_variant.featured_media | default: product.featured_media -%}
+      {%- for media in product.media -%}
+        <div
+          class="product-gallery__item{% if media == initial_media %} is-active{% endif %}"
+          data-media-id="{{ media.id }}"
+          {% unless media == initial_media %}hidden{% endunless %}
         >
-          {{ variant.title }} - {{ variant.price | money }}
-        </option>
-      {% endfor %}
-    </select>
+          {%- case media.media_type -%}
+            {%- when 'video' or 'external_video' -%}
+              {{ media | media_tag: controls: true }}
+            {%- when 'model' -%}
+              {{ media | media_tag: reveal: 'interaction' }}
+            {%- else -%}
+              {%- render 'image', image: media.preview_image, width: 1200 -%}
+          {%- endcase -%}
+        </div>
+      {%- else -%}
+        <div class="product-gallery__item product-gallery__item--placeholder"></div>
+      {%- endfor -%}
+    </div>
 
-    <input type="text" name="quantity" min="1" value="1">
+    {%- if product.media.size > 1 -%}
+      <div class="product-gallery__thumbs">
+        {%- for media in product.media -%}
+          <button
+            type="button"
+            class="product-gallery__thumb{% if media == initial_media %} is-active{% endif %}"
+            data-media-thumb="{{ media.id }}"
+          >
+            {%- render 'image', image: media.preview_image, width: 160 -%}
+          </button>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
 
-    <input type="submit" value="Add to cart">
-    {{ form | payment_button }}
-  {% endform %}
+  <div class="product-info">
+    {% content_for 'blocks' %}
+  </div>
 </div>
+
+{% stylesheet %}
+  .product-page {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 2.5rem;
+    align-items: start;
+  }
+  .product-gallery__main {
+    border-radius: var(--style-border-radius-card);
+    overflow: hidden;
+    background: color-mix(in srgb, var(--color-foreground) 4%, transparent);
+  }
+  .product-gallery__item--placeholder {
+    aspect-ratio: 1 / 1;
+  }
+  .product-gallery__thumbs {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    overflow-x: auto;
+  }
+  .product-gallery__thumb {
+    background: none;
+    border: 2px solid transparent;
+    border-radius: var(--style-border-radius-inputs);
+    padding: 0;
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+  .product-gallery__thumb.is-active {
+    border-color: var(--color-foreground);
+  }
+  .product-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  @media (max-width: 749px) {
+    .product-page {
+      grid-template-columns: 1fr;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.querySelectorAll('.product-gallery').forEach(function (gallery) {
+    var main = gallery.querySelector('[data-gallery-main]');
+    var thumbs = gallery.querySelectorAll('[data-media-thumb]');
+
+    function show(mediaId) {
+      main.querySelectorAll('[data-media-id]').forEach(function (item) {
+        var match = item.getAttribute('data-media-id') === mediaId;
+        item.hidden = !match;
+        item.classList.toggle('is-active', match);
+      });
+      thumbs.forEach(function (thumb) {
+        thumb.classList.toggle('is-active', thumb.getAttribute('data-media-thumb') === mediaId);
+      });
+    }
+
+    thumbs.forEach(function (thumb) {
+      thumb.addEventListener('click', function () {
+        show(thumb.getAttribute('data-media-thumb'));
+      });
+    });
+
+    var root = gallery.closest('[data-product-form-root]');
+    if (root) {
+      root.addEventListener('variant:change', function (e) {
+        var variant = e.detail.variant;
+        if (!variant || !variant.featuredImage) return;
+        // Featured image swap for the variant's own image, when it has one
+        // distinct from the gallery's media items (variant images).
+        var existing = main.querySelector('[data-variant-image]');
+        if (!existing) {
+          existing = document.createElement('div');
+          existing.className = 'product-gallery__item is-active';
+          existing.setAttribute('data-variant-image', '');
+          main.prepend(existing);
+        }
+        existing.innerHTML = '<img src="' + variant.featuredImage + '" alt="" loading="eager">';
+        main.querySelectorAll('[data-media-id]').forEach(function (item) {
+          item.hidden = true;
+          item.classList.remove('is-active');
+        });
+        existing.hidden = false;
+      });
+    }
+  });
+{% endjavascript %}
 
 {% schema %}
 {
   "name": "t:general.product",
+  "blocks": [
+    { "type": "@theme" },
+    { "type": "@app" }
+  ],
   "settings": [],
   "disabled_on": {
     "groups": ["header", "footer"]

@@ -1,0 +1,22 @@
+{% doc %}
+  Renders the current product's title. Non-truncated per Theme Store
+  requirements.
+
+  @example
+  {% content_for 'block', type: 'product-title', id: 'product-title' %}
+{% enddoc %}
+
+<h1 class="product-title" {{ block.shopify_attributes }}>{{ product.title }}</h1>
+
+{% stylesheet %}
+  .product-title {
+    margin: 0;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.product_title",
+  "settings": []
+}
+{% endschema %}
