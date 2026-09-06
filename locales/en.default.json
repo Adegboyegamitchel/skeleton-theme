@@ -22,7 +22,11 @@
     "comment_form_email": "Email",
     "comment_form_name": "Name",
     "comment_form_submit": "Post",
-    "comment_form_title": "Add a comment"
+    "comment_form_title": "Add a comment",
+    "comment_posted": "Your comment has been posted.",
+    "all_tags": "All",
+    "no_articles": "No articles yet.",
+    "back_to_blog": "Back to {{ blog }}"
   },
   "cart": {
     "checkout": "Checkout",
@@ -34,6 +38,16 @@
     "note": "Order note",
     "subtotal": "Subtotal",
     "taxes_and_shipping_at_checkout": "Taxes and shipping calculated at checkout"
+  },
+  "contact": {
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone number",
+      "message": "Message",
+      "send": "Send",
+      "post_success": "Thanks for reaching out. We'll get back to you soon."
+    }
   },
   "customers": {
     "login": {
@@ -54,9 +68,13 @@
     "use_at_checkout": "Use this gift card at checkout"
   },
   "password": {
-    "title": "This shop is private",
+    "title": "Enter using password",
     "password": "Password",
-    "enter": "Enter"
+    "enter": "Enter",
+    "notify_title": "Notify me when we launch",
+    "notify_email": "Email",
+    "notify_submit": "Notify me",
+    "notify_success": "Thanks! We'll let you know when we launch."
   },
   "products": {
     "product": {

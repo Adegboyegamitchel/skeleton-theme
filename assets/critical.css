@@ -148,6 +148,40 @@ button,
   padding: 0.75em 1.5em;
 }
 
+/* Shared rich-text content styling (product/article/page descriptions,
+   comments) -- keeps merchant-authored HTML from arbitrary Shopify rich
+   text editors readable without every section restyling it. */
+.rte > * + * {
+  margin-top: 1em;
+}
+.rte h1,
+.rte h2,
+.rte h3,
+.rte h4,
+.rte h5,
+.rte h6 {
+  margin-top: 1.5em;
+}
+.rte ul,
+.rte ol {
+  padding-left: 1.25em;
+}
+.rte li + li {
+  margin-top: 0.35em;
+}
+.rte blockquote {
+  margin: 0;
+  padding-left: 1em;
+  border-left: 3px solid var(--color-border);
+  color: var(--color-muted);
+}
+.rte img {
+  border-radius: var(--style-border-radius-card);
+}
+.rte a {
+  text-decoration: underline;
+}
+
 /** Section layout utilities */
 
 /**

@@ -1,64 +1,163 @@
 {% comment %}
   This section is used in the article template to render the article page, which
-  displays the full content of the blog post and can optionally include a
-  comments section for customers (not shown in this example).
+  displays the full content of the blog post and an optional comments section.
 
   https://shopify.dev/docs/storefronts/themes/architecture/templates/article
 {% endcomment %}
 
-{% if article.image %}
-  {{ article.image | image_url: width: 1000 | image_tag }}
-{% endif %}
+<article class="article-page">
+  <a href="{{ blog.url }}" class="article-page__back">&larr; {{ 'blog.back_to_blog' | t: blog: blog.title }}</a>
 
-<h1>{{ article.title }}</h1>
+  {%- if article.image -%}
+    <div class="article-page__media">
+      {%- render 'image', image: article.image, width: 1400 -%}
+    </div>
+  {%- endif -%}
 
-{% assign date = article.published_at | time_tag: format: 'date' %}
-<p>{{ 'blog.article_metadata_html' | t: date: date, author: article.author }}</p>
+  <header class="article-page__header">
+    <h1 class="article-page__title">{{ article.title }}</h1>
+    {%- assign date = article.published_at | time_tag: format: 'date' -%}
+    <p class="article-page__meta">{{ 'blog.article_metadata_html' | t: date: date, author: article.author }}</p>
+  </header>
 
-{{ article.content }}
-
-{% if blog.comments_enabled? %}
-  <h2>{{ 'blog.article_comments' | t }}</h2>
-
-  <div id="comments">
-    {% paginate article.comments by 10 %}
-      {% for comment in article.comments %}
-        <div>
-          <p>{{ comment.author }}</p>
-          <p>
-            {{- comment.created_at | time_tag: format: 'date' -}}
-          </p>
-          <p>{{ comment.content }}</p>
-        </div>
-      {% endfor %}
-
-      {{ paginate | default_pagination: anchor: 'comments' }}
-    {% endpaginate %}
+  <div class="article-page__content rte">
+    {{ article.content }}
   </div>
 
-  {% form 'new_comment', article %}
-    <h2>{{ 'blog.comment_form_title' | t }}</h2>
+  {%- if article.tags.size > 0 -%}
+    <ul class="article-page__tags">
+      {%- for tag in article.tags -%}
+        <li>{{ tag }}</li>
+      {%- endfor -%}
+    </ul>
+  {%- endif -%}
 
-    {{ form.errors | default_errors }}
+  {%- if blog.comments_enabled? -%}
+    <div class="article-comments" id="comments">
+      <h2>{{ 'blog.article_comments' | t }}</h2>
 
-    <div>
-      <label for="author">{{ 'blog.comment_form_name' | t }}</label>
-      <input type="text" name="comment[author]" id="author" value="{{ form.author }}" required>
+      {%- paginate article.comments by 10 -%}
+        <ul class="article-comments__list">
+          {%- for comment in article.comments -%}
+            <li class="article-comment">
+              <p class="article-comment__author">{{ comment.author }}</p>
+              <p class="article-comment__date">{{- comment.created_at | time_tag: format: 'date' -}}</p>
+              <div class="article-comment__body rte">{{ comment.content }}</div>
+            </li>
+          {%- endfor -%}
+        </ul>
+
+        {{ paginate | default_pagination: anchor: 'comments' }}
+      {%- endpaginate -%}
+
+      {%- form 'new_comment', article -%}
+        <h3>{{ 'blog.comment_form_title' | t }}</h3>
+
+        {{ form.errors | default_errors }}
+
+        {%- if form.posted_successfully? -%}
+          <p class="article-comments__success">{{ 'blog.comment_posted' | t }}</p>
+        {%- endif -%}
+
+        <div class="form-field">
+          <label for="CommentAuthor">{{ 'blog.comment_form_name' | t }}</label>
+          <input type="text" name="comment[author]" id="CommentAuthor" value="{{ form.author }}" required>
+        </div>
+
+        <div class="form-field">
+          <label for="CommentEmail">{{ 'blog.comment_form_email' | t }}</label>
+          <input type="email" name="comment[email]" id="CommentEmail" value="{{ form.email }}" required>
+        </div>
+
+        <div class="form-field">
+          <label for="CommentBody">{{ 'blog.comment_form_body' | t }}</label>
+          <textarea name="comment[body]" id="CommentBody" rows="5" required>{{ form.body }}</textarea>
+        </div>
+
+        <button type="submit" class="button">{{ 'blog.comment_form_submit' | t }}</button>
+      {%- endform -%}
     </div>
+  {%- endif -%}
+</article>
 
-    <div>
-      <label for="email">{{ 'blog.comment_form_email' | t }}</label>
-      <input type="email" name="comment[email]" id="email" value="{{ form.email }}" required>
-    </div>
-
-    <div>
-      <label for="body">{{ 'blog.comment_form_body' | t }}</label>
-      <textarea name="comment[body]" id="body" required>{{ form.body }}</textarea>
-    </div>
-
-    <input type="submit" value="{{ 'blog.comment_form_submit' | t }}">
-  {% endform %}
-{% endif %}
+{% stylesheet %}
+  .article-page {
+    max-width: 44rem;
+    margin: 0 auto;
+  }
+  .article-page__back {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    color: var(--color-muted);
+    font-size: 0.9rem;
+    text-decoration: none;
+  }
+  .article-page__media {
+    border-radius: var(--style-border-radius-card);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  .article-page__header {
+    margin-bottom: 1.5rem;
+  }
+  .article-page__meta {
+    margin: 0.5rem 0 0;
+    color: var(--color-muted);
+    font-size: 0.9rem;
+  }
+  .article-page__tags {
+    list-style: none;
+    margin: 2rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .article-page__tags li {
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    padding: 0.3rem 0.85rem;
+    font-size: 0.8rem;
+    color: var(--color-muted);
+  }
+  .article-comments {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border);
+  }
+  .article-comments__list {
+    list-style: none;
+    margin: 1.5rem 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .article-comment__author {
+    margin: 0;
+    font-weight: 600;
+  }
+  .article-comment__date {
+    margin: 0 0 0.5rem;
+    font-size: 0.8rem;
+    color: var(--color-muted);
+  }
+  .article-comments__success {
+    color: var(--color-accent);
+  }
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 1rem;
+    max-width: 28rem;
+  }
+  .form-field input,
+  .form-field textarea {
+    border: 1px solid var(--color-border);
+    padding: 0.6rem 0.75rem;
+  }
+{% endstylesheet %}
 
 {% schema %}
 {

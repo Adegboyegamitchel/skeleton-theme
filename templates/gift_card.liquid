@@ -13,11 +13,31 @@
     {% render 'meta-tags' %}
 
     {% style %}
+      body {
+        font-family: var(--font-primary--family);
+        color: var(--color-foreground);
+        background: var(--color-background);
+      }
       main {
         text-align: center;
+        max-width: 28rem;
+        margin: 4rem auto;
+        padding: 0 1.5rem;
       }
       main img {
         display: unset;
+      }
+      main h1 {
+        font-family: var(--font-heading--family);
+      }
+      .gift-card-code {
+        display: inline-block;
+        margin-top: 0.5rem;
+        padding: 0.6rem 1.25rem;
+        border: 1px dashed var(--color-border);
+        border-radius: var(--style-border-radius-card);
+        font-size: 1.1rem;
+        letter-spacing: 0.05em;
       }
     {% endstyle %}
 
@@ -55,7 +75,7 @@
 
         <h2>{{ shop.name }}</h2>
         <p>{{ 'gift_card.use_at_checkout' | t }}</p>
-        <p>{{ gift_card.code | format_code }}</p>
+        <p class="gift-card-code">{{ gift_card.code | format_code }}</p>
 
         {% if gift_card.pass_url %}
           <a href="{{ gift_card.pass_url }}">

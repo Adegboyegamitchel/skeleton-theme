@@ -1,0 +1,15 @@
+{
+  "sections": {
+    "main": {
+      "type": "page",
+      "settings": {}
+    },
+    "contact-form": {
+      "type": "contact-form",
+      "settings": {
+        "heading": "Contact us"
+      }
+    }
+  },
+  "order": ["main", "contact-form"]
+}

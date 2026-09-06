@@ -1,0 +1,94 @@
+{% comment %}
+  Renders a contact form using Shopify's built-in 'contact' form type, for
+  use on the page.contact.json alternate page template.
+
+  https://shopify.dev/docs/storefronts/themes/customer-engagement/add-contact-form
+{% endcomment %}
+
+<div class="contact-form">
+  {%- if section.settings.heading != blank -%}
+    <h2 class="contact-form__heading">{{ section.settings.heading }}</h2>
+  {%- endif -%}
+
+  {%- form 'contact', id: 'ContactForm' -%}
+    {{ form.errors | default_errors }}
+
+    {%- if form.posted_successfully? -%}
+      <p class="contact-form__success">{{ 'contact.form.post_success' | t }}</p>
+    {%- endif -%}
+
+    <div class="form-field">
+      <label for="ContactFormName">{{ 'contact.form.name' | t }}</label>
+      <input type="text" name="contact[name]" id="ContactFormName">
+    </div>
+
+    <div class="form-field">
+      <label for="ContactFormEmail">{{ 'contact.form.email' | t }}</label>
+      <input
+        type="email"
+        name="contact[email]"
+        id="ContactFormEmail"
+        value="{{ form.email }}"
+        autocomplete="email"
+        required
+      >
+    </div>
+
+    <div class="form-field">
+      <label for="ContactFormPhone">{{ 'contact.form.phone' | t }}</label>
+      <input type="tel" name="contact[phone]" id="ContactFormPhone" autocomplete="tel">
+    </div>
+
+    <div class="form-field">
+      <label for="ContactFormMessage">{{ 'contact.form.message' | t }}</label>
+      <textarea name="contact[body]" id="ContactFormMessage" rows="6" required>{{ form.body }}</textarea>
+    </div>
+
+    <button type="submit" class="button">{{ 'contact.form.send' | t }}</button>
+  {%- endform -%}
+</div>
+
+{% stylesheet %}
+  .contact-form {
+    max-width: 32rem;
+    margin: 0 auto;
+  }
+  .contact-form__heading {
+    margin-bottom: 1.5rem;
+  }
+  .contact-form__success {
+    color: var(--color-accent);
+    margin-bottom: 1rem;
+  }
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 1rem;
+  }
+  .form-field input,
+  .form-field textarea {
+    border: 1px solid var(--color-border);
+    padding: 0.6rem 0.75rem;
+    font: inherit;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.contact_form",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:general.heading",
+      "default": "Contact us"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:general.contact_form"
+    }
+  ]
+}
+{% endschema %}

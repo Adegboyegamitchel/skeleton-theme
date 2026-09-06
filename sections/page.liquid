@@ -5,9 +5,22 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/page
 {% endcomment %}
 
-<h1>{{ page.title }}</h1>
+<div class="page">
+  <h1 class="page__title">{{ page.title }}</h1>
+  <div class="page__content rte">
+    {{ page.content }}
+  </div>
+</div>
 
-{{ page.content }}
+{% stylesheet %}
+  .page {
+    max-width: 44rem;
+    margin: 0 auto;
+  }
+  .page__title {
+    margin-bottom: 1.5rem;
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
