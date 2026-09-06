@@ -73,18 +73,45 @@ Following an agreed 4-phase plan:
      dev store). Also added a featured-product spotlight section and a
      newsletter signup section, both missing.
 
+5. **Requirements audit pass** — done this session: fetched the
+   requirements page fresh and checked every line item against the
+   actual files rather than trusting earlier "done" notes. Fixed:
+   - Cart: accelerated checkout (a separate mechanism from the product
+     page's), per-line unit pricing, tax-inclusive messaging.
+   - Product: tax-inclusive note, Follow on Shop button, color/image
+     swatches on the variant picker (was text-only).
+   - New product recommendations section, wired twice (related +
+     complementary — both separately mandatory).
+   - New mandatory "Custom Liquid" section and block.
+   - New social media icons (footer) and favicon setting.
+   - Collection page image display; pagination on the list-collections
+     page (an original skeleton file, never touched before).
+   - Gift card page: added the QR code.
+   - Article comment success messaging now distinguishes moderated vs.
+     immediate posting.
+   - Caught and fixed a real pre-existing invalid-JSON bug (a trailing
+     comma) in the schema locale file that had been there since Phase 1
+     — `shopify theme check` never flagged it.
+   - Deliberately deferred: the recipient form for products sold *as*
+     gift cards (narrow applicability, nothing in this catalog to test
+     it against).
+
 All work is theme-check clean (0 offenses) and has been verified live in
-a browser against the dev store at each checkpoint. Every checkpoint is
-committed and pushed to `main`.
+a browser against the dev store wherever the dev store's data and
+Shopify's own feature eligibility allowed it. A few things (the Follow
+on Shop button, cart accelerated checkout, the gift card QR code's exact
+storefront URL) render conditionally on store-level configuration this
+fresh dev store doesn't have, or couldn't be pixel-verified here — the
+code matches the documented API exactly, but hasn't been visually
+confirmed. Every checkpoint is committed and pushed to `main`.
 
 ## Next steps
 
 - Confirm (or replace) the "Ease" working theme name with the user.
-- Do a fresh, literal re-check of the full requirements list at
-  shopify.dev/docs/storefronts/themes/store/requirements against the
-  actual files — this session found real gaps (selling plans,
-  localization, the home page itself) that earlier phases had assumed
-  were covered without verifying against the code, so a final audit
-  before submission is warranted.
+- The requirements list has now been checked twice; a third full pass
+  isn't obviously needed, but the Custom Liquid section/block and the
+  recommendations sections have only been checked via theme-check + code
+  review, not exercised through the theme editor UI — worth a look if
+  anyone wants extra confidence before submitting.
 - The actual Theme Store submission flow (Partner Dashboard → Themes →
   "Submit a theme") has still not been clicked.
