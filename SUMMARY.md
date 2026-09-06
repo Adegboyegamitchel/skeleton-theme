@@ -53,8 +53,25 @@ Following an agreed 4-phase plan:
    - Added a logo image-picker setting (skeleton referenced
      `settings.logo` in the gift card template but never defined the
      setting) — wired into the header with a shop-name-text fallback.
-4. **Compliance pass** (Lighthouse performance/accessibility, i18n) — not
-   started.
+4. **Compliance pass** — done this session:
+   - **Found the home page was still Skeleton's placeholder "Hello,
+     World!" tutorial section** (untouched since project start). Deleted
+     it and built a real hero + featured-collection homepage.
+   - Ran real Lighthouse audits: home ~60, collection 75, product 63
+     performance; accessibility 96-100 across the board. Fixed a
+     heading-order bug and a missing image alt; added eager-loading to
+     the hero and product-gallery images (likely LCP elements). One
+     remaining contrast issue is Shopify's own accelerated-checkout
+     button (closed shadow DOM, no color API — not theme-fixable, same
+     in every Shopify theme).
+   - Full i18n grep pass across all Liquid files — no hardcoded English
+     UI text found.
+   - **Found two more mandatory features were completely missing**
+     despite earlier phases: subscriptions/selling plans, and the
+     language/currency selector. Both added and verified working
+     end-to-end (a real test selling plan group, and a real 2-market
+     dev store). Also added a featured-product spotlight section and a
+     newsletter signup section, both missing.
 
 All work is theme-check clean (0 offenses) and has been verified live in
 a browser against the dev store at each checkpoint. Every checkpoint is
@@ -63,7 +80,11 @@ committed and pushed to `main`.
 ## Next steps
 
 - Confirm (or replace) the "Ease" working theme name with the user.
-- Phase 4 (the only phase left): Lighthouse performance (≥60) and
-  accessibility (≥90) audit, full i18n pass, before the actual Theme
-  Store submission flow (Partner Dashboard → Themes → "Submit a theme" —
-  not yet clicked).
+- Do a fresh, literal re-check of the full requirements list at
+  shopify.dev/docs/storefronts/themes/store/requirements against the
+  actual files — this session found real gaps (selling plans,
+  localization, the home page itself) that earlier phases had assumed
+  were covered without verifying against the code, so a final audit
+  before submission is warranted.
+- The actual Theme Store submission flow (Partner Dashboard → Themes →
+  "Submit a theme") has still not been clicked.
