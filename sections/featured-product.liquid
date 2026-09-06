@@ -1,0 +1,289 @@
+{% comment %}
+  Spotlights a single merchant-picked product (e.g. on the homepage):
+  image, title, price, a compact variant picker, quantity, and an
+  add-to-cart form. Self-contained (not the theme-blocks system, since
+  blocks are bound to the template's global `product` object and this
+  section needs to point at a different, merchant-picked one) but reuses
+  the same data-island + custom-event technique as the product page's
+  variant-picker block.
+
+  Supports @app blocks so apps (reviews, upsells, etc.) can extend it.
+{% endcomment %}
+
+{%- liquid
+  assign featured_product = section.settings.product
+-%}
+
+{%- if featured_product -%}
+  <div class="featured-product" data-featured-product-root>
+    <div class="featured-product__media">
+      {%- if featured_product.featured_image -%}
+        {%- render 'image', image: featured_product.featured_image, url: featured_product.url, width: 1000 -%}
+      {%- endif -%}
+    </div>
+
+    <div class="featured-product__info">
+      <h2 class="featured-product__title">
+        <a href="{{ featured_product.url }}">{{ featured_product.title | escape }}</a>
+      </h2>
+
+      {%- assign target_variant = featured_product.selected_or_first_available_variant -%}
+      {%- assign compare_at = target_variant.compare_at_price -%}
+      <p class="featured-product__price">
+        <span data-price>{{ target_variant.price | money }}</span>
+        {%- if compare_at > target_variant.price -%}
+          <span class="featured-product__price-compare" data-compare-price>{{ compare_at | money }}</span>
+        {%- endif -%}
+      </p>
+
+      {%- if featured_product.description != blank -%}
+        <div class="featured-product__description rte">{{ featured_product.description | strip_html | truncatewords: 40 }}</div>
+      {%- endif -%}
+
+      {%- form 'product', featured_product, data-featured-product-form: true -%}
+        <input type="hidden" name="id" value="{{ target_variant.id }}" data-variant-id>
+
+        {%- unless featured_product.has_only_default_variant -%}
+          <script type="application/json" data-variant-data>
+            [
+              {%- for variant in featured_product.variants -%}
+                {
+                  "id": {{ variant.id | json }},
+                  "available": {{ variant.available | json }},
+                  "options": {{ variant.options | json }},
+                  "price": {{ variant.price | money | json }},
+                  "compareAtPrice": {% if variant.compare_at_price > variant.price %}{{ variant.compare_at_price | money | json }}{% else %}null{% endif %}
+                }{% unless forloop.last %},{% endunless %}
+              {%- endfor -%}
+            ]
+          </script>
+          {%- for option in featured_product.options_with_values -%}
+            <div class="featured-product__option">
+              <label for="FeaturedProductOption-{{ section.id }}-{{ forloop.index0 }}">{{ option.name }}</label>
+              <select id="FeaturedProductOption-{{ section.id }}-{{ forloop.index0 }}" data-option-index="{{ forloop.index0 }}">
+                {%- for value in option.values -%}
+                  <option value="{{ value | escape }}" {% if value == option.selected_value %}selected{% endif %}>{{ value }}</option>
+                {%- endfor -%}
+              </select>
+            </div>
+          {%- endfor -%}
+        {%- endunless -%}
+
+        <div class="featured-product__row">
+          <div class="quantity-selector">
+            <button type="button" data-quantity-minus aria-label="{{ 'products.product.quantity_decrease' | t }}">&minus;</button>
+            <input type="number" name="quantity" min="1" value="1" data-quantity-input aria-label="{{ 'products.product.quantity' | t }}">
+            <button type="button" data-quantity-plus aria-label="{{ 'products.product.quantity_increase' | t }}">&plus;</button>
+          </div>
+          <button type="submit" class="button featured-product__add" data-add-to-cart {% unless target_variant.available %}disabled{% endunless %}>
+            <span data-add-to-cart-text data-add-label="{{ 'products.product.add_to_cart' | t }}" data-sold-out-label="{{ 'products.product.sold_out' | t }}">
+              {%- if target_variant.available -%}{{ 'products.product.add_to_cart' | t }}{%- else -%}{{ 'products.product.sold_out' | t }}{%- endif -%}
+            </span>
+          </button>
+        </div>
+      {%- endform -%}
+
+      {%- content_for 'blocks' -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .featured-product {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+    align-items: center;
+  }
+  .featured-product__media {
+    border-radius: var(--style-border-radius-card);
+    overflow: hidden;
+  }
+  .featured-product__info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .featured-product__title {
+    margin: 0;
+  }
+  .featured-product__title a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .featured-product__title a:hover {
+    text-decoration: underline;
+  }
+  .featured-product__price {
+    display: flex;
+    gap: 0.6rem;
+    align-items: baseline;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+  }
+  .featured-product__price-compare {
+    font-weight: 400;
+    color: var(--color-muted);
+    text-decoration: line-through;
+    font-size: 1rem;
+  }
+  .featured-product__description {
+    color: var(--color-muted);
+  }
+  .featured-product__option {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 1rem;
+    max-width: 16rem;
+  }
+  .featured-product__option select {
+    border: 1px solid var(--color-border);
+    border-radius: var(--style-border-radius-inputs);
+    padding: 0.5rem 0.6rem;
+    background: var(--color-background);
+  }
+  .featured-product__row {
+    display: flex;
+    gap: 0.75rem;
+  }
+  .quantity-selector {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--color-border);
+    border-radius: var(--style-border-radius-button);
+  }
+  .quantity-selector button {
+    background: none;
+    border: none;
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .quantity-selector input {
+    width: 3ch;
+    border: none;
+    text-align: center;
+    background: none;
+    -moz-appearance: textfield;
+  }
+  .featured-product__add {
+    flex: 1;
+    background: var(--color-foreground);
+    color: var(--color-background);
+    border-color: var(--color-foreground);
+    font-weight: 600;
+  }
+  .featured-product__add:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  @media (max-width: 749px) {
+    .featured-product {
+      grid-template-columns: 1fr;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.querySelectorAll('[data-featured-product-root]').forEach(function (root) {
+    var form = root.querySelector('[data-featured-product-form]');
+    if (!form) return;
+
+    var variantDataEl = form.querySelector('[data-variant-data]');
+    var variants = variantDataEl ? JSON.parse(variantDataEl.textContent) : null;
+    var optionSelects = Array.from(form.querySelectorAll('[data-option-index]'));
+    var idInput = form.querySelector('[data-variant-id]');
+    var priceEl = root.querySelector('[data-price]');
+    var comparePriceEl = root.querySelector('[data-compare-price]');
+    var addButton = form.querySelector('[data-add-to-cart]');
+    var addText = form.querySelector('[data-add-to-cart-text]');
+
+    function findVariant() {
+      if (!variants) return null;
+      var selection = optionSelects.map(function (select) { return select.value; });
+      return variants.find(function (variant) {
+        return variant.options.every(function (opt, i) { return opt === selection[i]; });
+      });
+    }
+
+    function applyVariant(variant) {
+      if (!variant) return;
+      idInput.value = variant.id;
+      if (priceEl) priceEl.textContent = variant.price;
+      if (comparePriceEl) {
+        if (variant.compareAtPrice) {
+          comparePriceEl.textContent = variant.compareAtPrice;
+          comparePriceEl.hidden = false;
+        } else {
+          comparePriceEl.hidden = true;
+        }
+      }
+      if (addButton) addButton.disabled = !variant.available;
+      if (addText) {
+        addText.textContent = variant.available
+          ? addText.getAttribute('data-add-label')
+          : addText.getAttribute('data-sold-out-label');
+      }
+    }
+
+    optionSelects.forEach(function (select) {
+      select.addEventListener('change', function () {
+        applyVariant(findVariant());
+      });
+    });
+
+    var minus = form.querySelector('[data-quantity-minus]');
+    var plus = form.querySelector('[data-quantity-plus]');
+    var qtyInput = form.querySelector('[data-quantity-input]');
+    if (minus && plus && qtyInput) {
+      minus.addEventListener('click', function () {
+        qtyInput.value = Math.max(1, (parseInt(qtyInput.value, 10) || 1) - 1);
+      });
+      plus.addEventListener('click', function () {
+        qtyInput.value = (parseInt(qtyInput.value, 10) || 1) + 1;
+      });
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var formData = new FormData(form);
+      fetch(window.Shopify && window.Shopify.routes && window.Shopify.routes.cart_add_url ? window.Shopify.routes.cart_add_url : '/cart/add', {
+        method: 'POST',
+        headers: { Accept: 'application/json' },
+        body: formData
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          if (data.status) {
+            console.error(data.description || 'Could not add to cart');
+            return;
+          }
+          document.dispatchEvent(new CustomEvent('cart:updated', { bubbles: true, detail: { item: data } }));
+        })
+        .catch(function (err) { console.error(err); });
+    });
+  });
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:general.featured_product",
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "t:general.product"
+    }
+  ],
+  "blocks": [
+    { "type": "@app" }
+  ],
+  "presets": [
+    {
+      "name": "t:general.featured_product"
+    }
+  ]
+}
+{% endschema %}

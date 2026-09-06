@@ -68,6 +68,11 @@
     "expires_on": "Expires on {{ expires_on }}",
     "use_at_checkout": "Use this gift card at checkout"
   },
+  "newsletter": {
+    "email": "Email",
+    "submit": "Sign up",
+    "success": "Thanks for signing up!"
+  },
   "password": {
     "title": "Enter using password",
     "password": "Password",

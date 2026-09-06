@@ -24,7 +24,20 @@
         "heading": "Featured products",
         "collection": "frontpage"
       }
+    },
+    "featured-product": {
+      "type": "featured-product",
+      "settings": {
+        "product": "the-complete-snowboard"
+      }
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {
+        "heading": "Stay in the loop",
+        "subheading": "Get news on new arrivals and offers."
+      }
     }
   },
-  "order": ["hero", "featured-collection"]
+  "order": ["hero", "featured-collection", "featured-product", "newsletter"]
 }
