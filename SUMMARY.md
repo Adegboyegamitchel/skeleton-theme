@@ -1,11 +1,13 @@
-# Ease — Shopify Theme Store Submission
+# Isoken — Shopify Theme Store Submission
 
 ## What this is
 
-A generic, sellable Shopify theme ("Ease" — working name, not yet
-confirmed) built for submission to the **Shopify Theme Store**. Built on
-Shopify's official Skeleton theme (a hard Theme Store requirement — Dawn-
-or Horizon-derived themes are not eligible). Uses ErgoLunch's visual
+A generic, sellable Shopify theme, **submitted to the Shopify Theme
+Store under the final name "Isoken"** (working name "Ease" had to be
+replaced — it was already taken by an existing Theme Store theme, caught
+by Shopify's own submission validator). Built on Shopify's official
+Skeleton theme (a hard Theme Store requirement — Dawn- or
+Horizon-derived themes are not eligible). Uses ErgoLunch's visual
 language (Playfair Display + Inter, sage-green/navy/off-white palette) as
 creative inspiration only; the section/page architecture is original,
 per the Theme Store's architectural-uniqueness requirement.
@@ -16,102 +18,65 @@ This is a separate project from the ErgoLunch storefront theme
 - Local: `C:\Users\HP\Downloads\skeleton-theme`
 - GitHub: github.com/Adegboyegamitchel/skeleton-theme (public)
 - Dev store: ease-theme-dev.myshopify.com (storefront password: `tewngu`)
+  — "Isoken 1.0.0 (submission demo)" is now the **live/published**
+  theme there, used as the submission's demo store link and screenshots.
+- Documentation/support page: https://claude.ai/code/artifact/4bf161db-e09d-4ebe-9899-b4bf603ae146
+  (FAQ, support policy, and a `mailto:`-based contact form routed to
+  isokandone@gmail.com — built as a Claude Artifact since it needed to
+  be genuinely public, which ruled out using the `db` capability).
 
-## Status
+## Status: SUBMITTED
 
-Following an agreed 4-phase plan:
+Shopify's confirmation: *"Thanks for submitting your theme. We'll
+review and contact you soon with next steps. You can edit your theme
+before review starts. During review, it will be locked."*
 
-1. **Foundation** — done (design tokens/colors/fonts, accessible type
-   scale, multi-level header nav + mobile nav, footer with policy links
-   and payment icons).
-2. **Core commerce templates** — done this session:
-   - Product page: composable theme blocks (title/vendor/price/
-     description/variant-picker/buy-buttons) kept in sync via a
-     `variant:change` custom event; accelerated checkout, Shop Pay
-     Installments, local pickup availability.
-   - Collection page: faceted filtering, sorting, responsive grid,
-     pagination, mobile filter drawer.
-   - Cart page: line items with options/selling plans/discounts, order
-     note, quantity steppers, empty state.
-   - Search page + predictive search: type tabs, faceted/sorted results,
-     mixed product/article/page rendering, header search flyout with a
-     live predictive-search dropdown.
-   - Shared snippets (`facet-filters`, `facet-sort`, `active-filters`,
-     `product-card`) reused across collection and search.
-3. **Everything else** — done this session:
-   - Blog: card grid with tag filtering; article page with tags and a
-     working comments form.
-   - Added a global `.rte` rich-text style (headings/lists/blockquotes)
-     to critical.css — every content template referenced it but it was
-     never actually defined.
-   - 404 page: added a search box next to "back to shopping".
-   - Password page: added the standard "notify me when we launch" email
-     capture form alongside the storefront-password form.
-   - New contact page template (`page.contact.json` + a `contact-form`
-     section using Shopify's built-in contact form) — skeleton didn't
-     ship one.
-   - Added a logo image-picker setting (skeleton referenced
-     `settings.logo` in the gift card template but never defined the
-     setting) — wired into the header with a shop-name-text fallback.
-4. **Compliance pass** — done this session:
-   - **Found the home page was still Skeleton's placeholder "Hello,
-     World!" tutorial section** (untouched since project start). Deleted
-     it and built a real hero + featured-collection homepage.
-   - Ran real Lighthouse audits: home ~60, collection 75, product 63
-     performance; accessibility 96-100 across the board. Fixed a
-     heading-order bug and a missing image alt; added eager-loading to
-     the hero and product-gallery images (likely LCP elements). One
-     remaining contrast issue is Shopify's own accelerated-checkout
-     button (closed shadow DOM, no color API — not theme-fixable, same
-     in every Shopify theme).
-   - Full i18n grep pass across all Liquid files — no hardcoded English
-     UI text found.
-   - **Found two more mandatory features were completely missing**
-     despite earlier phases: subscriptions/selling plans, and the
-     language/currency selector. Both added and verified working
-     end-to-end (a real test selling plan group, and a real 2-market
-     dev store). Also added a featured-product spotlight section and a
-     newsletter signup section, both missing.
+Work leading up to submission, across an agreed 4-phase build plan plus
+a final requirements audit and the submission mechanics themselves:
 
-5. **Requirements audit pass** — done this session: fetched the
-   requirements page fresh and checked every line item against the
-   actual files rather than trusting earlier "done" notes. Fixed:
-   - Cart: accelerated checkout (a separate mechanism from the product
-     page's), per-line unit pricing, tax-inclusive messaging.
-   - Product: tax-inclusive note, Follow on Shop button, color/image
-     swatches on the variant picker (was text-only).
-   - New product recommendations section, wired twice (related +
-     complementary — both separately mandatory).
-   - New mandatory "Custom Liquid" section and block.
-   - New social media icons (footer) and favicon setting.
-   - Collection page image display; pagination on the list-collections
-     page (an original skeleton file, never touched before).
-   - Gift card page: added the QR code.
-   - Article comment success messaging now distinguishes moderated vs.
-     immediate posting.
-   - Caught and fixed a real pre-existing invalid-JSON bug (a trailing
-     comma) in the schema locale file that had been there since Phase 1
-     — `shopify theme check` never flagged it.
-   - Deliberately deferred: the recipient form for products sold *as*
-     gift cards (narrow applicability, nothing in this catalog to test
-     it against).
+1. **Foundation** — design tokens/colors/fonts, accessible type scale,
+   multi-level header nav + mobile nav, footer with policy links and
+   payment icons.
+2. **Core commerce templates** — product page (composable theme blocks
+   synced via a custom event), collection page (faceted filtering,
+   sorting, pagination), cart page (line items, discounts, quantity
+   steppers), search page + predictive search.
+3. **Everything else** — blog with tag filtering, 404/password pages,
+   a new contact page template, a logo setting.
+4. **Compliance pass** — found the home page was still Skeleton's
+   placeholder "Hello, World!" tutorial content and replaced it; ran
+   real Lighthouse audits (accessibility 96-100, performance 60-75);
+   found and added two more mandatory features that had been missed
+   (subscriptions/selling plans, language/currency selector), plus a
+   featured-product section and newsletter signup.
+5. **Requirements audit pass** — fetched the official requirements page
+   fresh and checked every line item against the actual files. Found
+   and fixed: cart accelerated checkout + unit pricing, Follow on Shop
+   button, variant swatches, product recommendations (wired twice —
+   related and complementary), the mandatory Custom Liquid section and
+   block, social media icons, a favicon setting, collection image
+   display, list-collections pagination, a gift card QR code, and
+   comment-moderation messaging. Also caught a real pre-existing
+   invalid-JSON bug in the schema locale file that `theme check` never
+   flagged.
+6. **Submission** — built the documentation/support page (a public
+   Claude Artifact, since the theme's required support contact form and
+   docs link had to be reachable by anyone, not just the account's own
+   org); packaged and uploaded the theme zip; fixed real issues
+   Shopify's own validator caught on the first attempt (`Ease` name
+   collision, a malformed `settings_data.json` with no preset); renamed
+   to Isoken; published the theme live on the dev store and captured
+   exact-dimension screenshots (catching and fixing a real mobile
+   header bug along the way — a long shop name could push the cart icon
+   off-screen at common phone widths); filled in the listing (tagline,
+   industry, catalog size, SEO description, testing notes, uniqueness
+   and experience answers); submitted.
 
-All work is theme-check clean (0 offenses) and has been verified live in
-a browser against the dev store wherever the dev store's data and
-Shopify's own feature eligibility allowed it. A few things (the Follow
-on Shop button, cart accelerated checkout, the gift card QR code's exact
-storefront URL) render conditionally on store-level configuration this
-fresh dev store doesn't have, or couldn't be pixel-verified here — the
-code matches the documented API exactly, but hasn't been visually
-confirmed. Every checkpoint is committed and pushed to `main`.
+All theme work is theme-check clean (0 offenses) and was verified live
+in a browser at each checkpoint. Every checkpoint is committed and
+pushed to `main`.
 
 ## Next steps
 
-- Confirm (or replace) the "Ease" working theme name with the user.
-- The requirements list has now been checked twice; a third full pass
-  isn't obviously needed, but the Custom Liquid section/block and the
-  recommendations sections have only been checked via theme-check + code
-  review, not exercised through the theme editor UI — worth a look if
-  anyone wants extra confidence before submitting.
-- The actual Theme Store submission flow (Partner Dashboard → Themes →
-  "Submit a theme") has still not been clicked.
+Waiting on Shopify's review response. No further action is pending on
+this project unless/until Shopify contacts about the review outcome.
