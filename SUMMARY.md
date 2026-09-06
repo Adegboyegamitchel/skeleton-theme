@@ -38,8 +38,21 @@ Following an agreed 4-phase plan:
      live predictive-search dropdown.
    - Shared snippets (`facet-filters`, `facet-sort`, `active-filters`,
      `product-card`) reused across collection and search.
-3. **Everything else** (blog/article, gift card, 404, password, contact
-   page template) — not started.
+3. **Everything else** — done this session:
+   - Blog: card grid with tag filtering; article page with tags and a
+     working comments form.
+   - Added a global `.rte` rich-text style (headings/lists/blockquotes)
+     to critical.css — every content template referenced it but it was
+     never actually defined.
+   - 404 page: added a search box next to "back to shopping".
+   - Password page: added the standard "notify me when we launch" email
+     capture form alongside the storefront-password form.
+   - New contact page template (`page.contact.json` + a `contact-form`
+     section using Shopify's built-in contact form) — skeleton didn't
+     ship one.
+   - Added a logo image-picker setting (skeleton referenced
+     `settings.logo` in the gift card template but never defined the
+     setting) — wired into the header with a shop-name-text fallback.
 4. **Compliance pass** (Lighthouse performance/accessibility, i18n) — not
    started.
 
@@ -50,8 +63,7 @@ committed and pushed to `main`.
 ## Next steps
 
 - Confirm (or replace) the "Ease" working theme name with the user.
-- Phase 3: blog/article templates, gift card template, 404 page, password
-  page, and a contact page template (skeleton doesn't ship one).
-- Phase 4: Lighthouse performance (≥60) and accessibility (≥90) audit,
-  full i18n pass, before the actual Theme Store submission flow (Partner
-  Dashboard → Themes → "Submit a theme" — not yet clicked).
+- Phase 4 (the only phase left): Lighthouse performance (≥60) and
+  accessibility (≥90) audit, full i18n pass, before the actual Theme
+  Store submission flow (Partner Dashboard → Themes → "Submit a theme" —
+  not yet clicked).
